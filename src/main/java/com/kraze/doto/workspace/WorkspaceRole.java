@@ -1,4 +1,9 @@
 package com.kraze.doto.workspace;
 
-public class WorkspaceRole {
+public enum WorkspaceRole {
+    MEMBER, ADMIN, OWNER;
+
+    public boolean atLeast(WorkspaceRole required) {
+        return this.ordinal() >= required.ordinal();
+    }
 }
