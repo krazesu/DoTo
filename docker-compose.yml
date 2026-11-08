@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:16
+    container_name: doto-db
+    environment:
+      POSTGRES_DB: doto
+      POSTGRES_USER: doto
+      POSTGRES_PASSWORD: doto
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
