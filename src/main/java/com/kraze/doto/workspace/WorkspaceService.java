@@ -1,5 +1,9 @@
 package com.kraze.doto.workspace;
 
+import com.kraze.doto.common.exception.BadRequestException;
+import com.kraze.doto.common.exception.ConflictException;
+import com.kraze.doto.common.exception.ForbiddenException;
+import com.kraze.doto.common.exception.ResourceNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,8 +55,81 @@ public class WorkspaceService {
         return toResponse(findWorkspace(workspaceId), me.getRole());
     }
 
+    @Transactional
+    public WorkspaceResponse updateWorkspace(Long workspaceId, Long userId, UpdateWorkspaceRequest req){
+        WorkspaceMember me = access.requireRole(workspaceId, userId, WorkspaceRole.ADMIN);
+        Workspace w = findWorkspace(workspaceId);
+        w.setName(req.name().trim());
+        w.setDescription(req.description());
+        return toResponse(w, me.getRole());
+    }
 
+    @Transactional
+    public void deleteWorkspace(Long workspaceId, Long userId){
+        access.requireRole(workspaceId, userId, WorkspaceRole.OWNER);
+        workspaces.deleteById(workspaceId);
+    }
 
+    @Transactional
+    public WorkspaceResponse joinWorkspace(Long userId, JoinWorkspaceRequest req){
+        Workspace w = workspaces.findByInviteCode(req.inviteCode().trim().toUpperCase())
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid invite code"));
+
+        if (members.existsByWorkspaceIdAndUserId(w.getId(), userId)){
+            throw new ConflictException("You are already a member of this workspace");
+        }
+
+        members.save(new WorkspaceMember(w.getId(), userId, WorkspaceRole.MEMBER));
+        return toResponse(w, WorkspaceRole.MEMBER);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberResponse> listMembers(Long workspaceId, Long userId){
+        access.requireMember(workspaceId, userId);
+        return members.findMembers(workspaceId);
+    }
+
+    @Transactional
+    public MemberResponse changeRole(long workspaceId, Long actorId, Long targetUserId, ChangeRoleRequest req){
+        access.requireRole(workspaceId, actorId, WorkspaceRole.OWNER);
+        if (req.role() == WorkspaceRole.OWNER){
+            throw new BadRequestException("Transferring ownership not supported yet");
+        }
+
+        WorkspaceMember target = members.findByWorkspaceIdAndUserId(workspaceId, targetUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found"));
+
+        if (target.getRole() == WorkspaceRole.OWNER){
+            throw new ConflictException("The owner's role cannot be changed");
+        }
+
+        target.setRole(req.role());
+        return members.findMembers(workspaceId).stream()
+                .filter(m -> m.userId().equals(targetUserId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found"));
+    }
+
+    @Transactional
+    public void removeMember(Long workspaceId, Long actorId, Long targetUserId){
+        WorkspaceMember actor = access.requireMember(workspaceId, actorId);
+        WorkspaceMember target = members.findByWorkspaceIdAndUserId(workspaceId, targetUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found"));
+
+        if(target.getRole() == WorkspaceRole.OWNER){
+            throw new ConflictException("The owner cannot be removed");
+        }
+        boolean leavingSelf = actorId.equals(targetUserId);
+        if (!leavingSelf){
+            if(!actor.getRole().atLeast(WorkspaceRole.ADMIN)){
+                throw new ForbiddenException("Only ADMIN and OWNER can remove members");
+            }
+            if(target.getRole() == WorkspaceRole.ADMIN && actor.getRole() != WorkspaceRole.OWNER){
+                throw new ForbiddenException("Only OWNER can remove and admin");
+            }
+        }
+        members.delete(target);
+    }
 
     //Helper functions
     private Workspace findWorkspace(Long workspaceId){
