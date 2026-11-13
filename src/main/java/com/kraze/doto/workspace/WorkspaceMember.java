@@ -28,9 +28,6 @@ public class WorkspaceMember {
     @Column(nullable = false)
     private WorkspaceRole role;
 
-    @Column(nullable = false, unique = true)
-    private String inviteCode;
-
     @Column(nullable = false, updatable = false)
     private Instant joinedAt;
 

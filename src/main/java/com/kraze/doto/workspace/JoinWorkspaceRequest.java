@@ -1,4 +1,6 @@
 package com.kraze.doto.workspace;
 
-public class JoinWorkspaceRequest {
+import jakarta.validation.constraints.NotBlank;
+
+public record JoinWorkspaceRequest(@NotBlank String inviteCode){
 }

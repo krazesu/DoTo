@@ -1,4 +1,6 @@
 package com.kraze.doto.workspace;
 
-public class ChangeRoleRequest {
+import jakarta.validation.constraints.NotNull;
+
+public record ChangeRoleRequest (@NotNull WorkspaceRole role){
 }
