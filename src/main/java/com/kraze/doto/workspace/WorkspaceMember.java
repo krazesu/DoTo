@@ -13,7 +13,6 @@ import java.time.Instant;
 @Getter
 @Setter
 @NoArgsConstructor
-@RequiredArgsConstructor()
 public class WorkspaceMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
