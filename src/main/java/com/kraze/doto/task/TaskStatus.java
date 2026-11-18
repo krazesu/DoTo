@@ -1,4 +1,8 @@
 package com.kraze.doto.task;
 
-public class TaskStatus {
+public enum TaskStatus {
+    TODO,
+    IN_PROGRESS,
+    IN_REVIEW,
+    DONE
 }

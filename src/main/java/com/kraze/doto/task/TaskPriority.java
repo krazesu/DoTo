@@ -1,4 +1,8 @@
 package com.kraze.doto.task;
 
-public class TaskPriority {
+public enum TaskPriority {
+    LOW,
+    MEDIUM,
+    HIGH,
+    URGENT
 }
