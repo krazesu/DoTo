@@ -41,6 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }, () -> log.warn("Token is valid but user {} does not exist", userId));
             } catch (JwtException | IllegalArgumentException e) {
                 log.warn("JWT rejected: {}", e.toString());
+                SecurityContextHolder.clearContext();
             }
         }
         chain.doFilter(request, response);
