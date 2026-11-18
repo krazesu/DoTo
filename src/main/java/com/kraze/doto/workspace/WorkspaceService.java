@@ -119,6 +119,7 @@ public class WorkspaceService {
         if(target.getRole() == WorkspaceRole.OWNER){
             throw new ConflictException("The owner cannot be removed");
         }
+
         boolean leavingSelf = actorId.equals(targetUserId);
         if (!leavingSelf){
             if(!actor.getRole().atLeast(WorkspaceRole.ADMIN)){
