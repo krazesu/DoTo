@@ -1,4 +1,7 @@
 package com.kraze.doto.common.dto;
 
-public class UserSummary {
-}
+public record UserSummary (
+        Long id,
+        String username,
+        String displayName
+) {}
