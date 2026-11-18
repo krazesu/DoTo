@@ -2,6 +2,7 @@ package com.kraze.doto.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -51,5 +52,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> badRequest(BadRequestException ex) {
         return ResponseEntity.badRequest()
                 .body(new ApiError(400, ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ApiError> optimisticLock(ObjectOptimisticLockingFailureException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiError(409, "This record was changed by someone else. Reload and try again", null));
     }
 }
