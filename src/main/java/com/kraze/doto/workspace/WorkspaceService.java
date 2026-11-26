@@ -4,6 +4,7 @@ import com.kraze.doto.common.exception.BadRequestException;
 import com.kraze.doto.common.exception.ConflictException;
 import com.kraze.doto.common.exception.ForbiddenException;
 import com.kraze.doto.common.exception.ResourceNotFoundException;
+import com.kraze.doto.task.TaskRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class WorkspaceService {
     private final WorkspaceRepository workspaces;
     private final WorkspaceMemberRepository members;
     private final WorkspaceAccessService access;
+    private final TaskRepository tasks;
     private final SecureRandom random = new SecureRandom();
 
     @Transactional
@@ -129,6 +131,7 @@ public class WorkspaceService {
                 throw new ForbiddenException("Only OWNER can remove and admin");
             }
         }
+        tasks.unassignUser(workspaceId, targetUserId);
         members.delete(target);
     }
 
