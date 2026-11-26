@@ -37,7 +37,11 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
             """)
     List<AssigneeStatusCount> getAssigneeStatusCounts(@Param("workspaceId") Long workspaceId);
 
-    long countByWorkspaceIdAndStatusNotAndDueDateBefore(Long workspaceId, TaskStatus status, LocalDate date);
+    long countByWorkspaceIdAndStatusNotAndDueDateBefore(
+            Long workspaceId,
+            TaskStatus status,
+            LocalDate date
+    );
 
     long countByWorkspaceIdAndAssigneeIdIsNull(Long workspaceId);
 
