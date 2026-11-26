@@ -34,3 +34,5 @@ build/
 
 ### local Spring Boot configuration ###
 src/main/resources/application-local.yaml
+
+todo.txt
