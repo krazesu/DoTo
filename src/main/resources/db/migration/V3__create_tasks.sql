@@ -32,6 +32,7 @@ CREATE TABLE activity_logs (
     actor_id            BIGINT  NOT NULL REFERENCES users(id),
     action              VARCHAR(40) NOT NULL,
     target_type         VARCHAR(20) NOT NULL,
+    target_id           BIGINT      NOT NULL,
     details             VARCHAR(500),
     created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
