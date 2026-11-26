@@ -1,4 +1,10 @@
 package com.kraze.doto.task;
 
-public class SubtaskRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Collection;
+import java.util.List;
+
+public interface SubtaskRepository extends JpaRepository<Subtask, Long> {
+    List<Subtask> findByTaskIdInOrderByIdAsc(Collection<Long> taskIds);
 }
