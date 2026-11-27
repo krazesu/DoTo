@@ -143,7 +143,7 @@ public class TaskService {
         task.setAssigneeId(newAssignee);
         tasks.saveAndFlush(task);
 
-        activity.record(task.getWorkspaceId(), userId, ActivityAction.TASKS_ASSIGNED, "TASK", task.getId(), details);
+        activity.record(task.getWorkspaceId(), userId, ActivityAction.TASK_ASSIGNED, "TASK", task.getId(), details);
         return single(task);
     }
 
@@ -154,7 +154,7 @@ public class TaskService {
 
         boolean isCreator = task.getCreatedBy().equals(userId);
         if(!isCreator && !me.getRole().atLeast(WorkspaceRole.ADMIN)){
-            throw new ForbiddenException("You are not allowed to delete this task");
+            throw new ForbiddenException("Only the creator, an admin, or the owner can delete this task");
         }
 
         activity.record(task.getWorkspaceId(), userId, ActivityAction.TASK_DELETED, "TASK", task.getId(), "Deleted \"" + task.getTitle() + "\"");
@@ -215,12 +215,20 @@ public class TaskService {
                 .toList();
 
         return new TaskResponse(
-                t.getId(), t.getWorkspaceId(), t.getTitle(), t.getDescription(),
-                t.getStatus(), t.getPriority(), t.getDueDate(), overdue,
+                t.getId(),
+                t.getWorkspaceId(),
+                t.getTitle(),
+                t.getDescription(),
+                t.getStatus(),
+                t.getPriority(),
+                t.getDueDate(),
+                overdue,
                 t.getAssigneeId() == null ? null : userMap.get(t.getAssigneeId()),
                 userMap.get(t.getCreatedBy()),
                 subResponses,
                 ProgressCalculator.forTask(t.getStatus(), subs.size(), done),
-                t.getVersion(), t.getCreatedAt(), t.getUpdatedAt());
+                t.getVersion(),
+                t.getCreatedAt(),
+                t.getUpdatedAt());
     }
 }
