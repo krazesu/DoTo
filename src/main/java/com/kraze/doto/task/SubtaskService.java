@@ -26,7 +26,7 @@ public class SubtaskService {
         access.requireMember(task.getWorkspaceId(), userId);
 
         Subtask subtask = new Subtask();
-        subtask.setId(taskId);
+        subtask.setTaskId(taskId);
         subtask.setTitle(req.title().trim());
         subtask.setDone(false);
         subtasks.save(subtask);
