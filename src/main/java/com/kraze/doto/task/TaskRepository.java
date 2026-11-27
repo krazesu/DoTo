@@ -30,7 +30,7 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     List<StatusCount> getStatusCounts(@Param("workspaceId") Long workspaceId);
 
     @Query("""
-            SELECT t.assigneeId as userId, t.status as status, COUNT(T) as total
+            SELECT t.assigneeId as userId, t.status as status, COUNT(t) as total
             FROM Task t
             WHERE t.workspaceId = :workspaceId AND t.assigneeId IS NOT NULL
             GROUP BY t.assigneeId, t.status
