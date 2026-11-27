@@ -9,7 +9,7 @@ public record PageResponse<T>(
         int page,
         int size,
         Long totalElements,
-        int totalPage
+        int totalPages
     ){
 
     public static <T> PageResponse<T> of(List<T> content, Page<?> page){
